@@ -598,21 +598,15 @@ static void draw_wizard(struct nk_context *ctx, gui_state_t *st,
         return;
     }
 
-    /* Step indicator dots */
+    /* Step indicator — ASCII-safe, e.g. "Step 1 of 4  [*] [ ] [ ] [ ]" */
     nk_layout_row_dynamic(ctx, 20, 1);
     {
-        char dots[32];
-        snprintf(dots, sizeof(dots), "Step %d of 4", st->wizard_step + 1);
+        char dot_str[64] = "";
+        char tmp[16];
+        snprintf(tmp, sizeof(tmp), "Step %d/4  ", st->wizard_step + 1);
+        strcat(dot_str, tmp);
         for (int i = 0; i < 4; i++) {
-            if (i > 0) dots[0] = '\0'; /* only show text once */
-        }
-        /* Draw step dots as text */
-        char dot_str[32] = "";
-        for (int i = 0; i < 4; i++) {
-            if (i == st->wizard_step)
-                strcat(dot_str, " ● ");
-            else
-                strcat(dot_str, " ○ ");
+            strcat(dot_str, i == st->wizard_step ? "[*] " : "[ ] ");
         }
         nk_label(ctx, dot_str, NK_TEXT_CENTERED);
     }
@@ -635,7 +629,7 @@ static void draw_wizard(struct nk_context *ctx, gui_state_t *st,
             "This wizard will check that everything is set up "
             "for accurate analysis.");
 
-        nk_layout_row_dynamic(ctx, ROW_LABEL, 1);
+        nk_layout_row_dynamic(ctx, 44, 1);
         nk_label_wrap(ctx,
             "HalalSeq identifies animal species in food samples "
             "using mitochondrial DNA markers.");
